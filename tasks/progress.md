@@ -18,3 +18,10 @@
   - Ran Flask dev server on http://127.0.0.1:5000, verified /predict via synthetic digit test (200 OK, correct prediction)
   - Opened the app in the default browser for manual testing
   - User confirmed manual drawing test in browser works correctly
+- Pushed initial project to GitHub: https://github.com/qmpzalsk10/claude-deep-mnist-pjt (public)
+- Added `README.md`, committed and pushed
+- User reported low real-world recognition accuracy → added data augmentation
+  (RandomRotation/RandomTranslation/RandomZoom) to `train_model.py`, retrained (12 epochs)
+  - Test accuracy: 98.92% (slightly lower on clean MNIST, expected to generalize better to freehand input)
+  - Font-rendered digit sanity test improved from 7/10 to 8/10
+  - Restarted Flask server with the new model, committed and pushed the update
