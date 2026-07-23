@@ -15,9 +15,20 @@ x_test = x_test.astype("float32") / 255.0
 x_train = x_train[..., None]
 x_test = x_test[..., None]
 
-# Build a simple CNN classifier for 10 digit classes (0-9)
+# Data augmentation layers: only active during training, skipped at inference time.
+# Real hand-drawn digits vary in rotation/position/scale much more than the clean
+# MNIST source images, so training on randomly perturbed copies makes the model
+# generalize better to freehand mouse/touch drawings.
+data_augmentation = keras.Sequential([
+    layers.RandomRotation(0.08),          # up to about +-15 degrees
+    layers.RandomTranslation(0.1, 0.1),   # shift up to 10% of image size
+    layers.RandomZoom(0.1),               # zoom in/out up to 10%
+], name="data_augmentation")
+
+# Build a CNN classifier for 10 digit classes (0-9)
 model = keras.Sequential([
     layers.Input(shape=(28, 28, 1)),
+    data_augmentation,
     layers.Conv2D(32, kernel_size=3, activation="relu"),
     layers.MaxPooling2D(pool_size=2),
     layers.Conv2D(64, kernel_size=3, activation="relu"),
@@ -36,10 +47,11 @@ model.compile(
 
 model.summary()
 
-# Train the model
+# Train the model (more epochs than before since augmentation makes each epoch
+# see different variations, so it takes a bit longer to converge)
 model.fit(
     x_train, y_train,
-    epochs=5,
+    epochs=12,
     batch_size=128,
     validation_split=0.1,
 )
